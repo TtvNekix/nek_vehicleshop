@@ -70,10 +70,14 @@ RegisterNetEvent('nek_vs:buyCar', function(model, price, hash, mode)
                 generatePlate(hash)
                 Wait(3500)
                 xPlayer.showNotification("Has recibido un vehiculo -- Matricula: " .. plate .. " / Modelo: " .. model)
-                sendWB("**".. identifier .."** ha comprado un vehiculo\n\n**Coste:** $".. price .."\n**Modelo:** ".. model .."\n**Matricula:** ".. plate .."\n**Cuenta utilizada:** ".. mode)
+                if Config['EnableWebhook'] then
+                	sendWB("**".. identifier .."** ha comprado un vehiculo\n\n**Coste:** $".. price .."\n**Modelo:** ".. model .."\n**Matricula:** ".. plate .."\n**Cuenta utilizada:** ".. mode)
+            	end
             else
-                sendWB("**".. identifier .."** intento comprar mediante la cuenta **".. mode .."** por el valor de **$".. price .."** pero no tenia dinero suficiente.")
-                xPlayer.showNotification("No tienes dinero suficiente")
+		if Config['EnableWebhook'] then
+                	sendWB("**".. identifier .."** intento comprar mediante la cuenta **".. mode .."** por el valor de **$".. price .."** pero no tenia dinero suficiente.")
+                end
+		xPlayer.showNotification("No tienes dinero suficiente")
             end
         elseif mode == 'money' then
             if xPlayer.getMoney() >= tonumber(price) then
@@ -82,9 +86,13 @@ RegisterNetEvent('nek_vs:buyCar', function(model, price, hash, mode)
                 generatePlate(hash)
                 Wait(3500)
                 xPlayer.showNotification("Has recibido un vehiculo -- Matricula: " .. plate .. " / Modelo: " .. model)
-                sendWB("**".. identifier .."** ha comprado un vehiculo\n\n**Coste:** $".. price .."\n**Modelo:** ".. model .."\n**Matricula:** ".. plate .."\n**Cuenta utilizada:** ".. mode)
-            else
-                sendWB("**".. identifier .."** intento comprar mediante la cuenta **".. mode .."** por el valor de **$".. price .."** pero no tenia dinero suficiente.")
+		if Config['EnableWebhook'] then
+                	sendWB("**".. identifier .."** ha comprado un vehiculo\n\n**Coste:** $".. price .."\n**Modelo:** ".. model .."\n**Matricula:** ".. plate .."\n**Cuenta utilizada:** ".. mode)
+            	end
+	else
+                if Config['EnableWebhook'] then
+                	sendWB("**".. identifier .."** intento comprar mediante la cuenta **".. mode .."** por el valor de **$".. price .."** pero no tenia dinero suficiente.")
+                end
                 xPlayer.showNotification("No tienes dinero suficiente")
             end
         end
