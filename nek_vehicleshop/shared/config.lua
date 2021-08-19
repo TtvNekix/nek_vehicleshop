@@ -1,5 +1,5 @@
 Config = {}
-Config['Version'] = 1.0 -- DON'T TOUCH THIS
+Config['Version'] = 1.1 -- DON'T TOUCH THIS
 Config['EnableWebhook'] = true
 
 Config['Webhook'] = "https://discord.com/api/webhooks/878027900643835955/ubEpGZdx4ekmw1aPryCcAbtiUU_DrqFk77rueVfetG5a6_YgNnZPeKi33yVXc1vpnY5E" -- Change me compulsory
