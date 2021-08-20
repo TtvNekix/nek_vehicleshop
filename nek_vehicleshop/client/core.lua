@@ -14,11 +14,13 @@ AddEventHandler('esx:onPlayerSpawn', function()
     spawnVehicles()
 end)
 
-AddEventHandler('onResourceStart', function()
-    Wait(1000)
-    deleteNearbyVehicles(20)
-    Wait(5000)
-    spawnVehicles()
+AddEventHandler('onResourceStart', function(resource)
+    if GetCurrentResourceName() == resource then
+        Wait(1000)
+        deleteNearbyVehicles(20)
+        Wait(5000)
+        spawnVehicles()
+    end
 end)
 
 AddEventHandler('onResourceStop', function(resource)
