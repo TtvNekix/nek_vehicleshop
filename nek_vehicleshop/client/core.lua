@@ -41,14 +41,14 @@ deleteNearbyVehicles = function(radius)
                 local attempt = 0
 
                 while not NetworkHasControlOfEntity(entity) and attempt < 100 and DoesEntityExist(entity) do
-                    Citizen.Wait(100)
+                    Citizen.Wait(10)
                     NetworkRequestControlOfEntity(entity)
                     attempt = attempt + 1
                 end
 
                 if DoesEntityExist(entity) and NetworkHasControlOfEntity(entity) then
                     NetworkFadeOutEntity(entity, true, true)
-                    Wait(1000)
+                    Wait(500)
                     ESX.Game.DeleteVehicle(entity)
                 end
             end
@@ -61,14 +61,14 @@ deleteNearbyVehicles = function(radius)
 		end
 
 		while not NetworkHasControlOfEntity(vehicle) and attempt < 100 and DoesEntityExist(vehicle) do
-			Citizen.Wait(100)
+			Citizen.Wait(10)
 			NetworkRequestControlOfEntity(vehicle)
 			attempt = attempt + 1
 		end
 
 		if DoesEntityExist(vehicle) and NetworkHasControlOfEntity(vehicle) then
             NetworkFadeOutEntity(vehicle, true, true)
-            Wait(1000)
+            Wait(500)
 			ESX.Game.DeleteVehicle(vehicle)
 		end
 	end
