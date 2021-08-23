@@ -5,11 +5,6 @@ Citizen.CreateThread(function()
         TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
         Citizen.Wait(0)
     end
-		
-    Wait(1000)
-    deleteNearbyVehicles(20)
-    Wait(5000)
-    spawnVehicles()
 end)
 
 AddEventHandler('onResourceStart', function(resource)
