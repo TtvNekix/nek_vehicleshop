@@ -56,7 +56,7 @@ RegisterNetEvent('nek_vs:carInDb', function(vehicleData)
 		
     vehicleData.plate = plate
 
-    print(xplayer.identifier.. " obtuvo un vehiculo con matricula " ..json.encode(vehicleData.plate))
+    print(xPlayer.identifier.. " obtuvo un vehiculo con matricula " ..json.encode(vehicleData.plate))
 
     MySQL.Sync.execute("INSERT INTO owned_vehicles (owner, plate, vehicle) VALUES (@owner, @plate, @vehicle)",
     {
