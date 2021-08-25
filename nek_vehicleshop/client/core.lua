@@ -87,7 +87,7 @@ spawnVehicles = function()
         ESX.Game.SpawnVehicle(v['model'], vector3(v['x'], v['y'], z), v['r'], function(veh)
             SetEntityLocallyInvisible(veh)
             NetworkFadeInEntity(veh, true, true)
-
+	    SetVehicleNumberPlateText(veh, "NEKIX VS")
             SetVehicleUndriveable(veh, true)
             FreezeEntityPosition(veh, true)
         end)
