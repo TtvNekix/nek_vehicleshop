@@ -53,6 +53,10 @@ end
 
 RegisterNetEvent('nek_vs:carInDb', function(vehicleData)
     local xPlayer = ESX.GetPlayerFromId(source)
+		
+    vehicleData.plate = plate
+
+    print(xplayer.identifier.. " obtuvo un vehiculo con matricula " ..json.encode(vehicleData.plate))
 
     MySQL.Sync.execute("INSERT INTO owned_vehicles (owner, plate, vehicle) VALUES (@owner, @plate, @vehicle)",
     {
@@ -60,6 +64,8 @@ RegisterNetEvent('nek_vs:carInDb', function(vehicleData)
         ['@plate'] = tostring(plate),
         ['@vehicle'] = tostring(json.encode(vehicleData))
     })
+
+    
 end)
 
 sendWB = function(message)
