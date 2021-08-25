@@ -85,28 +85,45 @@ sendWB = function(message)
 	print("Webhook Enviado")
 end
 
-RegisterNetEvent('nek_vs:buyCar', function(model, model2, price, hash, mode, vehData)
+RegisterNetEvent('nek_vs:buyCar', function(model, model2, price, hash, mode)
     local src = source
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.identifier
 
     if model and price then
-        if mode == 'vipcoins' then
-            if xPlayer.getAccount('vipcoins').money >= tonumber(price) then
-                xPlayer.removeAccountMoney('vipcoins', tonumber(price))
+        if mode == 'bank' then
+            if xPlayer.getAccount('bank').money >= tonumber(price) then
+                xPlayer.removeAccountMoney('bank', tonumber(price))
                 xPlayer.showNotification("Obteniendo matricula...")
-                generatePlate(hash, vehData)
+                generatePlate(hash)
                 Citizen.Wait(3500)
                 TriggerClientEvent('nek_vs:giveCar', src, model, plate)
                 xPlayer.showNotification("Has recibido un vehiculo -- Matricula: " .. plate .. " / Modelo: " .. model)
                 if Config['EnableWebhook'] then
-                	sendWB("**".. identifier .."** ha comprado un vehiculo\n\n**Coste:** ".. price .." BellaCoins\n**Modelo:** ".. model .."\n**Matricula:** ".. plate .."\n**Cuenta utilizada:** ".. mode)
+                	sendWB("**".. identifier .."** ha comprado un vehiculo\n\n**Coste:** $".. price .."\n**Modelo:** ".. model .."\n**Matricula:** ".. plate .."\n**Cuenta utilizada:** ".. mode)
             	end
             else
                 if Config['EnableWebhook'] then
-                	sendWB("**".. identifier .."** intento comprar mediante la cuenta **".. mode .."** por el valor de **".. price .." BellaCoins** pero no tenia dinero suficiente.")
+                	sendWB("**".. identifier .."** intento comprar mediante la cuenta **".. mode .."** por el valor de **$".. price .."** pero no tenia dinero suficiente.")
                 end
-                xPlayer.showNotification("No tienes BellaCoins suficientes")
+                xPlayer.showNotification("No tienes dinero suficiente")
+            end
+        elseif mode == 'money' then
+            if xPlayer.getMoney() >= tonumber(price) then
+                xPlayer.removeMoney(tonumber(price))
+                xPlayer.showNotification("Obteniendo matricula...")
+                generatePlate(hash)
+                Citizen.Wait(3500)
+                TriggerClientEvent('nek_vs:giveCar', src, model, plate)
+                xPlayer.showNotification("Has recibido un vehiculo -- Matricula: " .. plate .. " / Modelo: " .. model)
+                if Config['EnableWebhook'] then
+                	sendWB("**".. identifier .."** ha comprado un vehiculo\n\n**Coste:** $".. price .."\n**Modelo:** ".. model .."\n**Matricula:** ".. plate .."\n**Cuenta utilizada:** ".. mode)
+            	end
+            else
+                if Config['EnableWebhook'] then
+                	sendWB("**".. identifier .."** intento comprar mediante la cuenta **".. mode .."** por el valor de **$".. price .."** pero no tenia dinero suficiente.")
+                end
+                xPlayer.showNotification("No tienes dinero suficiente")
             end
         end
     end
