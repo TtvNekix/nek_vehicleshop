@@ -1,5 +1,5 @@
 Config = {}
-Config['Version'] = 1.7 -- DON'T TOUCH THIS
+Config['Version'] = 1.8 -- DON'T TOUCH THIS
 
 Config['EnableWebhook'] = false
 Config['Webhook'] = "" -- Change me compulsory
@@ -12,7 +12,8 @@ Config['VS'] = {
     ['NeedLicense'] = false, -- Need license? Dependency --> esx_license
     ['LicenseRequired'] = 'drive', -- Only if ['NeedLicense'] is true
     ['Menu'] = {
-        {label = "Pagar con Monedas VIP", value = 'vipcoins'}
+        {label = "Pagar en Efectivo", value = 'money'},
+        {label = "Pagar con Tarjeta", value = 'bank'}
     },
     ['Cars'] = {
         {
