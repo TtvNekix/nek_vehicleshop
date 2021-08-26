@@ -22,9 +22,9 @@ Citizen.CreateThread(function()
     Wait(3000)
     if status then
         status = false
-        deleteNearbyVehicles(20)
+        deleteNearbyVehicles(5)
         Wait(1000)
-        deleteNearbyVehicles(20)
+        deleteNearbyVehicles(5)
         Wait(5000)
         spawnVehicles()
     end
@@ -32,7 +32,7 @@ end)
 
 AddEventHandler('onResourceStop', function(resource)
     if GetCurrentResourceName() == resource then
-        deleteNearbyVehicles(20)
+        deleteNearbyVehicles(5)
     end
 end)
 
@@ -145,14 +145,14 @@ end
 local vehicle = nil
 RegisterNetEvent('nek_vs:giveCar', function(model, plate)
     for k ,v in pairs(Config['VS']['Spawn']) do
-        ESX.Game.SpawnVehicle(model, vector3(v['x'], v['y'], v['z']), v['r'], function(veh) 
+        ESX.Game.SpawnVehicle(GetHashKey(model), vector3(v['x'], v['y'], v['z']), v['r'], function(veh) 
             vehicle = veh
-            TriggerServerEvent('nek_vs:carInDb', ESX.Game.GetVehicleProperties(veh))
             SetPedIntoVehicle(PlayerPedId(), veh, -1)
             FreezeEntityPosition(veh, false)
             SetVehicleNumberPlateText(veh, tostring(plate))
         end)
         Wait(2500)
+        TriggerServerEvent('nek_vs:carInDb', {model = GetHashKey(model), plate = plate})
         ESX.ShowNotification("Vehiculo ~g~Entregado~w~.")
     end
 end)
@@ -168,7 +168,7 @@ Citizen.CreateThread(function()
                 if dist <= 2.5 then
                     msec = 0
                     local z = v['z'] + 1.30
-                    floatingText("Modelo: ~g~" ..v['label'].. "~w~\nPrecio: ~g~" ..v['price'].. " ~r~BellaCoins~w~\nPulsa ~y~E ~w~para ~g~comprar", vector3(v['x'], v['y'], z))
+                    floatingText("Modelo: ~g~" ..v['label'].. "~w~\nPrecio: ~g~$" ..v['price'].. "~w~\nPulsa ~y~E ~w~para ~g~comprar", vector3(v['x'], v['y'], z))
                     if IsControlJustPressed(0, Config['VS']['PressKey']) then
                         if Config['VS']['NeedLicense'] then
                             ESX.ShowNotification("Verificando licencia...")
