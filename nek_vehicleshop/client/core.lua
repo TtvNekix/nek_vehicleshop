@@ -83,7 +83,6 @@ spawnVehicles = function()
     for k, v in pairs(Config['VS']['Cars']) do
         local z = v['z'] - 1.00
         ESX.Game.SpawnLocalVehicle(v['model'], vector3(v['x'], v['y'], z), v['r'], function(veh)
-            SetVehicleOnGroundProperly(veh)
             SetEntityLocallyInvisible(veh)
             SetVehicleNumberPlateText(veh, "NEKIX VS")
             SetVehicleDoorsLocked(veh, 3)
