@@ -1,5 +1,5 @@
 Config = {}
-Config['Version'] = 2.2 -- DON'T TOUCH THIS
+Config['Version'] = 2.3 -- DON'T TOUCH THIS
 Config['Locale'] = 'es'
 
 Config['EnableWebhook'] = true
