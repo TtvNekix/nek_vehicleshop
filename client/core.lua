@@ -88,6 +88,7 @@ spawnVehicles = function()
             SetVehicleDoorsLocked(veh, 3)
             SetVehicleUndriveable(veh, true)
             FreezeEntityPosition(veh, true)
+            SetEntityInvincible(veh, true)
         end)
     end
 end
@@ -120,12 +121,55 @@ floatingText = function(msg, coords)
 	EndTextCommandDisplayHelp(2, false, false, -1)
 end
 
-ConceMenu = function(model, model2, price, hash)
+local inTest = false
+local testCar = nil
+driveTest = function(model, spawner)
+    if inTest then
+        ESX.ShowNotification(_('alreadyTesting'))
+    else
+        inTest = true
+        local coords = GetEntityCoords(PlayerPedId())
+        ESX.Game.SpawnVehicle(model, vector3(Config['VS']['Spawners'][spawner]['x'], Config['VS']['Spawners'][spawner]['y'], Config['VS']['Spawners'][spawner]['z']), Config['VS']['Spawners'][spawner]['r'], function(veh)
+            testCar = veh
+            SetVehicleUndriveable(veh, false)
+            SetPedIntoVehicle(PlayerPedId(), veh, -1)
+            SetVehicleNumberPlateText(veh, "DRIVE VS")
+        end)
+
+        local sec = Config['VS']['TestTime'] * 60
+
+        while inTest do
+            if sec > 0 then
+                sec = sec - 1
+                SendNUIMessage({
+                    show = true;
+                    text = _('notification_1').. "" ..tostring(sec).. "" .._('notification_2');
+                })
+            elseif sec <= 0 then
+                print("Se acabo")
+                inTest = false
+                TaskLeaveVehicle(PlayerPedId(), testCar)
+                Wait(2500)
+                NetworkFadeOutEntity(testCar, true, false)
+                SendNUIMessage({
+                    show = false;
+                })
+                Wait(1500)
+                if Config['VS']['BackToVSAfterTest'] then
+                    SetEntityCoords(PlayerPedId(), coords)
+                end
+            end
+            Wait(1000)
+        end
+    end
+end
+
+ConceMenu = function(model, model2, price, hash, spawner)
     local elements = Config['VS']['Menu']
 
     ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'menu', 
     {
-            title    = '¿Con metodo que deseas pagar?',
+            title    = _('payMethod'),
             align    = 'right',
             elements = elements
     }, 
@@ -133,12 +177,15 @@ ConceMenu = function(model, model2, price, hash)
     local data = data.current.value
 
     if data == 'money' or data == 'bank' then
-        TriggerServerEvent('nek_vs:buyCar', model, model2, price, hash, data, matricula)
+        TriggerServerEvent('nek_vs:buyCar', model, model2, price, hash, data, matricula, spawner)
         ESX.UI.Menu.CloseAll()
+    elseif data == 'test' then
+        ESX.UI.Menu.CloseAll()
+        driveTest(model2, spawner)
     elseif data == 'plate' then
         ESX.UI.Menu.Open('dialog', GetCurrentResourceName(), 'menu2',
         {
-                title    = 'Inserta la Matricula [8 CARACTERES MAX]',
+                title    = _('insertPlate'),
         }, 
         function(data2, menu2)
         local data2 = data2.value
@@ -148,14 +195,14 @@ ConceMenu = function(model, model2, price, hash)
                 ESX.TriggerServerCallback('nek_vs:existPlate', function(cb)
                     if cb then
                         matricula = data2
-                        ESX.ShowNotification("Matricula personalizada insertada --> " ..matricula)
+                        ESX.ShowNotification(_('insertedPlate').. "" ..matricula)
                     else
-                        ESX.ShowNotification("Esa matricula ya existe")
+                        ESX.ShowNotification(_('plateAlreadyExists'))
                     end
                 end, tostring(data2))
                 
             else
-                ESX.ShowNotification("En esta ciudad no estan permitidas las matriculas personalizadas")
+                ESX.ShowNotification(_('notPersPlate'))
                 matricula = nil
             end
             
@@ -171,19 +218,17 @@ ConceMenu = function(model, model2, price, hash)
 end
 
 local vehicle = nil
-RegisterNetEvent('nek_vs:giveCar', function(model, plate)
-    for k ,v in pairs(Config['VS']['Spawn']) do
-        ESX.Game.SpawnVehicle(model, vector3(v['x'], v['y'], v['z']), v['r'], function(veh)
-            vehicle = veh
-            SetPedIntoVehicle(PlayerPedId(), veh, -1)
-            FreezeEntityPosition(veh, false)
-            SetVehicleNumberPlateText(veh, tostring(plate))
-        end)
-        Wait(2500)
-        TriggerServerEvent('nek_vs:carInDb', {model = GetHashKey(model), plate = plate})
-        ESX.ShowNotification("Vehiculo ~g~Entregado~w~.")
-        matricula = nil
-    end
+RegisterNetEvent('nek_vs:giveCar', function(model, plate, spawner)
+    ESX.Game.SpawnVehicle(model, vector3(Config['VS']['Spawners'][spawner]['x'], Config['VS']['Spawners'][spawner]['y'], Config['VS']['Spawners'][spawner]['z']), Config['VS']['Spawners'][spawner]['r'], function(veh)
+        vehicle = veh
+        SetPedIntoVehicle(PlayerPedId(), veh, -1)
+        FreezeEntityPosition(veh, false)
+        SetVehicleNumberPlateText(veh, tostring(plate))
+    end)
+    Wait(2500)
+    TriggerServerEvent('nek_vs:carInDb', {model = GetHashKey(model), plate = plate})
+    ESX.ShowNotification(_('vehReceived'))
+    matricula = nil
 end)
 
 Citizen.CreateThread(function()
@@ -197,18 +242,18 @@ Citizen.CreateThread(function()
                 if dist <= 2.5 then
                     msec = 0
                     local z = v['z'] + 1.30
-                    floatingText("Modelo: ~g~" ..v['label'].. "~w~\nPrecio: ~g~$" ..v['price'].. "~w~\nPulsa ~y~E ~w~para ~g~interactuar", vector3(v['x'], v['y'], z))
+                    floatingText("Model: ~g~" ..v['label'].. "~w~\nPrice: ~g~$" ..v['price'].. "~w~\nPress ~y~E ~w~to ~g~interact", vector3(v['x'], v['y'], z))
                     if IsControlJustPressed(0, Config['VS']['PressKey']) then
                         if Config['VS']['NeedLicense'] then
-                            ESX.ShowNotification("Verificando licencia...")
+                            ESX.ShowNotification(_('verLicense'))
                             Wait(3500)
                             ESX.TriggerServerCallback('nek_vs:checkLicense', function(cb) 
                                 if cb then
-                                    ConceMenu(v['label'], v['model'], v['price'], GetHashKey(v['model']))
+                                    ConceMenu(v['label'], v['model'], v['price'], GetHashKey(v['model']), v['spawner'])
                                 end
                             end, Config['VS']['LicenseRequired'])
                         else
-                            ConceMenu(v['label'], v['model'], v['price'], GetHashKey(v['model']))
+                            ConceMenu(v['label'], v['model'], v['price'], GetHashKey(v['model']), v['spawner'])
                         end
                     end
                 end

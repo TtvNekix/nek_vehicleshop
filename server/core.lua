@@ -16,7 +16,7 @@ ESX.RegisterServerCallback('nek_vs:checkLicense', function(src, cb, type)
         if results[1] then
             cb(true)
         else
-            xPlayer.showNotification("No tienes la licencia de conducir")
+            xPlayer.showNotification(_('notHaveLicense'))
         end
     end)
 end)
@@ -25,8 +25,19 @@ generatePlate = function(hash)
     local xPlayer = ESX.GetPlayerFromId(source)
 
     plate = nil
+    local letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+    local random = math.random(1, #letters)
+    local random2 = math.random(1, #letters)
+    local random3 = math.random(1, #letters)
+    local letter1 = letters[random]
+    local letter2 = letters[random2]
+    local letter3 = letters[random3]
 
-    plate = "NEK " ..math.random(1000, 9999)
+    if Config['VS']['RandomPlate'] then
+        plate = letter1 .."".. letter2 .."".. letter3 .." ".. math.random(1000, 9999)
+    else
+        plate = "NEK " ..math.random(1000, 9999)
+    end
 
     MySQL.Async.fetchAll("SELECT * FROM owned_vehicles WHERE plate = @plate",
     {
@@ -45,7 +56,7 @@ end
 RegisterNetEvent('nek_vs:carInDb', function(vehicleData)
     local xPlayer = ESX.GetPlayerFromId(source)
 
-    print(xPlayer.identifier.. " obtuvo un vehiculo con matricula " ..json.encode(plate))
+    print(xPlayer.identifier.. " ".. _('getCarPlate') .." ".. json.encode(plate))
 
     MySQL.Sync.execute("INSERT INTO owned_vehicles (owner, plate, vehicle) VALUES (@owner, @plate, @vehicle)",
     {
@@ -54,7 +65,6 @@ RegisterNetEvent('nek_vs:carInDb', function(vehicleData)
         ['@vehicle'] = tostring(json.encode(vehicleData))
     })
 
-    
 end)
 
 sendWB = function(message)
@@ -97,7 +107,7 @@ ESX.RegisterServerCallback('nek_vs:existPlate', function(source, cb, plate)
     end)
 end)
 
-RegisterNetEvent('nek_vs:buyCar', function(model, model2, price, hash, mode, matricula)
+RegisterNetEvent('nek_vs:buyCar', function(model, model2, price, hash, mode, matricula, spawner)
     local src = source
     local xPlayer = ESX.GetPlayerFromId(source)
     local identifier = xPlayer.identifier
@@ -106,42 +116,40 @@ RegisterNetEvent('nek_vs:buyCar', function(model, model2, price, hash, mode, mat
         if mode == 'bank' then
             if xPlayer.getAccount('bank').money >= tonumber(price) then
                 xPlayer.removeAccountMoney('bank', tonumber(price))
-                xPlayer.showNotification("Obteniendo matricula...")
                 if matricula == nil then
                     generatePlate(hash)
                 else
                     plate = matricula
                 end
-                Citizen.Wait(3500)
-                TriggerClientEvent('nek_vs:giveCar', src, model2, plate)
+                Citizen.Wait(1000)
+                TriggerClientEvent('nek_vs:giveCar', src, model2, plate, spawner)
                 xPlayer.showNotification("Has recibido un vehiculo -- Matricula: " .. plate .. " / Modelo: " .. model)
                 if Config['EnableWebhook'] then
-                	sendWB("**".. identifier .."** ha comprado un vehiculo\n\n**Coste:** $".. price .."\n**Modelo:** ".. model .."\n**Matricula:** ".. plate .."\n**Cuenta utilizada:** ".. mode)
+                	sendWB("**".. identifier .."** buy a vehicle\n\n**Price:** $".. price .."\n**Model:** ".. model .."\n**Plate:** ".. plate .."\n**Account Used:** ".. mode)
             	end
             else
                 if Config['EnableWebhook'] then
-                	sendWB("**".. identifier .."** intento comprar mediante la cuenta **".. mode .."** por el valor de **$".. price .."** pero no tenia dinero suficiente.")
+                	sendWB("**".. identifier .."** try to buy with account **".. mode .."** with a price of **$".. price .."** but doesn't have money.")
                 end
                 xPlayer.showNotification("No tienes dinero suficiente")
             end
         elseif mode == 'money' then
             if xPlayer.getMoney() >= tonumber(price) then
                 xPlayer.removeMoney(tonumber(price))
-                xPlayer.showNotification("Obteniendo matricula...")
                 if matricula == nil then
                     generatePlate(hash)
                 else
                     plate = matricula
                 end
-                Citizen.Wait(3500)
-                TriggerClientEvent('nek_vs:giveCar', src, model2, plate)
-                xPlayer.showNotification("Has recibido un vehiculo -- Matricula: " .. plate .. " / Modelo: " .. model)
+                Citizen.Wait(1000)
+                TriggerClientEvent('nek_vs:giveCar', src, model2, plate, spawner)
+                xPlayer.showNotification(_('getVehicle_1') .."".. plate .. "".. _('getVehicle_2') .."".. model)
                 if Config['EnableWebhook'] then
-                	sendWB("**".. identifier .."** ha comprado un vehiculo\n\n**Coste:** $".. price .."\n**Modelo:** ".. model .."\n**Matricula:** ".. plate .."\n**Cuenta utilizada:** ".. mode)
+                	sendWB("**".. identifier .."** buy a vehicle\n\n**Price:** $".. price .."\n**Model:** ".. model .."\n**Plate:** ".. plate .."\n**Account Used:** ".. mode)
             	end
             else
                 if Config['EnableWebhook'] then
-                	sendWB("**".. identifier .."** intento comprar mediante la cuenta **".. mode .."** por el valor de **$".. price .."** pero no tenia dinero suficiente.")
+                	sendWB("**".. identifier .."** try to buy with account **".. mode .."** with a price of **$".. price .."** but doesn't have money.")
                 end
                 xPlayer.showNotification("No tienes dinero suficiente")
             end
