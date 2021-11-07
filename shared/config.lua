@@ -14,7 +14,7 @@ Config['VS'] = {
     ['LicenseRequired'] = 'drive', -- Only if ['NeedLicense'] is true
     ['PersonalizedPlate'] = true,
     ['RandomPlate'] = false, -- Random letters and numbers
-    ['TestTime'] = 5, -- IN MINUTES! Minutes, not ms
+    ['TestTime'] = 1, -- IN MINUTES! Minutes, not ms
     ['BackToVSAfterTest'] = true, -- Back to the Vehicle Shop after the drive test finished
     ['Menu'] = {
         {label = "Test de conduccion del coche", value = 'test'}, -- Only if ['DriveTest'] is true ^^
@@ -31,6 +31,15 @@ Config['VS'] = {
             ['color'] = 47,
             ['scale'] = 0.75,
             ['label'] = "Concesionario VIP",
+        },
+        {
+            ['x'] = -53.45557,
+            ['y'] = -1116.232,
+            ['z'] = 26.435,
+            ['sprite'] = 523,
+            ['color'] = 47,
+            ['scale'] = 0.75,
+            ['label'] = "Vehicle Shop 2",
         }
     },
     ['Cars'] = {
@@ -48,9 +57,9 @@ Config['VS'] = {
             ['model'] = 'bati',
             ['label'] = "Bati",
             ['price'] = 1,
-            ['x'] = 317.4483,
-            ['y'] = -1166.113,
-            ['z'] = 29.29177,
+            ['x'] = -53.45557,
+            ['y'] = -1116.232,
+            ['z'] = 26.435,
             ['r'] = 7.3242,
             ['spawner'] = 'Test2'
         },
@@ -59,14 +68,14 @@ Config['VS'] = {
         ['Test1'] = {
             ['x'] = 222.1689,
             ['y'] = -852.3805,
-            ['z'] = 30.06906,
+            ['z'] = 31.06906,
             ['r'] = -110.8709
         },
         ['Test2'] = {
-            ['x'] = 318.294,
-            ['y'] = -1153.851,
-            ['z'] = 29.29191,
-            ['r'] = 5.499
-        }
+            ['x'] = -30.98,
+            ['y'] = -1089.839,
+            ['z'] = 27.0,
+            ['r'] = 334.4646
+        },
     }
 }
