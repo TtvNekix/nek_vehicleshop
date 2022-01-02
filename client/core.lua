@@ -155,6 +155,7 @@ driveTest = function(model, spawner)
                     show = false;
                 })
                 Wait(1500)
+		DeleteVehicle(testCar)
                 if Config['VS']['BackToVSAfterTest'] then
                     SetEntityCoords(PlayerPedId(), coords)
                 end
