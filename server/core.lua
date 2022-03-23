@@ -16,7 +16,7 @@ ESX.RegisterServerCallback('nek_vs:checkLicense', function(src, cb, type)
         if results[1] then
             cb(true)
         else
-            xPlayer.showNotification(_('notHaveLicense'))
+		TriggerClientEvent('esx:showNotification', src, _('notHaveLicense'))
         end
     end)
 end)
@@ -154,7 +154,7 @@ RegisterNetEvent('nek_vs:buyCar', function(model, model2, price, hash, mode, mat
                 end
                 Citizen.Wait(1000)
                 TriggerClientEvent('nek_vs:giveCar', src, model2, plate, spawner)
-                xPlayer.showNotification("Has recibido un vehiculo -- Matricula: " .. plate .. " / Modelo: " .. model)
+		TriggerClientEvent('esx:showNotification', src, _('getVehicle_1') .."".. plate .. "".. _('getVehicle_2') .."".. model)
                 if Config['EnableWebhook'] then
                 	sendWB("**".. identifier .."** buy a vehicle\n\n**Price:** $".. price .."\n**Model:** ".. model .."\n**Plate:** ".. plate .."\n**Account Used:** ".. mode)
             	end
@@ -162,7 +162,7 @@ RegisterNetEvent('nek_vs:buyCar', function(model, model2, price, hash, mode, mat
                 if Config['EnableWebhook'] then
                 	sendWB("**".. identifier .."** try to buy with account **".. mode .."** with a price of **$".. price .."** but doesn't have money.")
                 end
-                xPlayer.showNotification("No tienes dinero suficiente")
+                TriggerClientEvent('esx:showNotification', src, "No tienes dinero suficiente")
             end
         elseif mode == 'money' then
             if xPlayer.getMoney() >= tonumber(price) then
@@ -174,7 +174,7 @@ RegisterNetEvent('nek_vs:buyCar', function(model, model2, price, hash, mode, mat
                 end
                 Citizen.Wait(1000)
                 TriggerClientEvent('nek_vs:giveCar', src, model2, plate, spawner)
-                xPlayer.showNotification(_('getVehicle_1') .."".. plate .. "".. _('getVehicle_2') .."".. model)
+                TriggerClientEvent('esx:showNotification', src, _('getVehicle_1') .."".. plate .. "".. _('getVehicle_2') .."".. model)
                 if Config['EnableWebhook'] then
                 	sendWB("**".. identifier .."** buy a vehicle\n\n**Price:** $".. price .."\n**Model:** ".. model .."\n**Plate:** ".. plate .."\n**Account Used:** ".. mode)
             	end
@@ -182,7 +182,7 @@ RegisterNetEvent('nek_vs:buyCar', function(model, model2, price, hash, mode, mat
                 if Config['EnableWebhook'] then
                 	sendWB("**".. identifier .."** try to buy with account **".. mode .."** with a price of **$".. price .."** but doesn't have money.")
                 end
-                xPlayer.showNotification("No tienes dinero suficiente")
+                TriggerClientEvent('esx:showNotification', src, "No tienes dinero suficiente")
             end
         end
     end
